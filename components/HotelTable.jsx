@@ -1,39 +1,44 @@
 
-import {Table} from "antd";
+import {Table, message} from "antd";
+import {useEffect, useState} from "react";
 
-import clientPromise from "../lib/mongodb"
-
-// export interface YanoljaHotel {
-//     hotel_id: number,
-//     hotel_name: string,
-//     hotel_type: string,
-//     hotel_location: string
-// }
-
-let columns = [
-    // {name: "hotel_id", dataIndex: "hotel_id", key: "hotel_id"},
-    // {name: "hotel_name", dataIndex: "hotel_name", key: "hotel_name"},
-    // {name: "hotel_type", dataIndex: "hotel_type", key: "hotel_type"},
-    // {name: "hotel_location", dataIndex: "hotel_location", key: "hotel_location"},
-    {name : "name", dataIndex : "name", key: "name" },
+const columns = [
+    {name: "name", dataIndex: "name", key: "name"},
 ]
 
-export default async function HotelTable() {
-
-    const client = await clientPromise;
-    const db = client.db("yanolja")
-    const hotelList = await db
-        .collection("yanolja_hotel")
-        .find({}).toArray()
-
-    const dataSource= hotelList.map((hotel) => ({
-                name : `[${hotel.hotel_type}]${hotel.hotel_name}`,
+export default function HotelTable() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const onRow = (record) => {
+        return {
+            onClick: (event) => {
+                message.info("클릭성공");
+            }
+        }
+    }
+    let [dataSource, setDataSource] = useState([]);
+    useEffect( () => {
+        const fetchHotel = async () =>{
+            const response = await fetch("/api/hotel", {
+                method: "GET",
+                headers : {
+                    "Content-Type": "application/json",
+                }
             })
-        );
+            const hotelList = await response.json();
+            dataSource = hotelList.map((hotel) => ({
+                    name: `[${hotel.hotel_type}]${hotel.hotel_name}`,
+                    key: hotel.hotel_id,
+                    dataIndex: hotel.hotel_id
+                })
+            );
+            setDataSource(dataSource);
+        }
+        fetchHotel()
+    }, []);
 
     return (
         <>
-            <Table dataSource={dataSource} columns={columns}>
+            <Table dataSource={dataSource} columns={columns} onRow={onRow}>
             </Table>
         </>
     )
