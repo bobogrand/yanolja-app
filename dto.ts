@@ -6,9 +6,10 @@ export interface HotelQuery {
     hotel_location?: string|object
 }
 
-export interface SearchQuery extends HotelQuery {
-    check_in_date_start: string,
-    check_in_date_end: string,
+export interface SearchQuery{
+    hotel_id_list? : number[],
+    check_in_date_start: Date,
+    check_in_date_end: Date,
 }
 
 
