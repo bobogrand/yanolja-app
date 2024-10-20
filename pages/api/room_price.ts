@@ -5,6 +5,11 @@ import {Filter} from "mongodb";
 import {YanolJaRoomPrice} from "../../dto";
 
 export async function getYanolJaRoomPrice(searchQuery: dto.SearchQuery): Promise<YanolJaRoomPrice[]> {
+    if(!searchQuery || searchQuery.hotel_id_list === undefined || searchQuery.hotel_id_list.length === null ) {
+        return [];
+    }
+
+    searchQuery.hotel_id_list = searchQuery.hotel_id_list.split(",");
     const client = await clientPromise;
 
     const query: Filter<dto.YanolJaRoomPrice> = {
@@ -18,7 +23,7 @@ export async function getYanolJaRoomPrice(searchQuery: dto.SearchQuery): Promise
 
     const data: YanolJaRoomPrice[] = await client
         .db("yanolja").collection<dto.YanolJaRoomPrice>("yanolja_room_price")
-        .find(query, {projection: {_id: 0}}).toArray()
+        .find(query, {projection: {_id: 0}}).sort({search_datetime : -1}).toArray()
 
     return data;
 

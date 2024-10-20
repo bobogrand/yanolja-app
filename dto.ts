@@ -8,8 +8,8 @@ export interface HotelQuery {
 
 export interface SearchQuery{
     hotel_id_list? : number[],
-    check_in_date_start: Date,
-    check_in_date_end: Date,
+    check_in_date_start: string|Date,
+    check_in_date_end: string|Date,
 }
 
 
